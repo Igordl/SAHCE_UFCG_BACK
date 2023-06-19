@@ -30,6 +30,9 @@ public class Schedule implements Serializable {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private MyUser owner;
+    @ManyToMany
+    @JoinColumn(name = "owner_id")
+    private List<MyUser> guestes;
     @NotNull
     private boolean available;
     @NotNull
@@ -71,6 +74,14 @@ public class Schedule implements Serializable {
 
     public void setOwner(MyUser owner) {
         this.owner = owner;
+    }
+
+    public List<MyUser> getGuestesUser() {
+        return guestes;
+    }
+
+    public void setGuestesUser(List<MyUser> guestes) {
+        this.guestes = guestes;
     }
 
     public boolean isAvailable() {
@@ -123,8 +134,10 @@ public class Schedule implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Schedule schedule = (Schedule) o;
         return place.equals(schedule.place) && initialDate.equals(schedule.initialDate) &&
                 finalDate.equals(schedule.finalDate) && timesByDayList.equals(schedule.timesByDayList);

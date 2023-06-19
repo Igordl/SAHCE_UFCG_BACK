@@ -1,6 +1,7 @@
 package com.sahce.ufcg.services;
 
 import com.sahce.ufcg.dtos.place.PlaceResponseDto;
+import com.sahce.ufcg.models.MyUser;
 import com.sahce.ufcg.models.Place;
 import com.sahce.ufcg.repositories.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;

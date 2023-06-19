@@ -1,6 +1,7 @@
 package com.sahce.ufcg.controllers;
 
 import com.sahce.ufcg.dtos.myUser.MyUserResponseDto;
+import com.sahce.ufcg.dtos.restePassword.ResetPasswordDtoRequest;
 import com.sahce.ufcg.dtos.myUser.MyUserDtoRequest;
 import com.sahce.ufcg.services.MyUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1")
+@CrossOrigin(origins = "http://localhost:3000")
 public class MyUserController {
     @Autowired
     private MyUserService service;
@@ -24,20 +26,25 @@ public class MyUserController {
     }
 
     @PostMapping("/anonymous/users")
-    public ResponseEntity<MyUserResponseDto> save(@RequestBody MyUserDtoRequest user){
+    public ResponseEntity<MyUserResponseDto> save(@RequestBody MyUserDtoRequest user) {
         return new ResponseEntity<>(service.save(user), HttpStatus.OK);
+    }
+
+    @PostMapping("/anonymous/resetPassword")
+    public HttpStatus resetPassword(@RequestBody ResetPasswordDtoRequest user) {
+        service.resetPassword(user.getEmail(), user.getToken(), user.getNewPassword());
+        return HttpStatus.OK;
     }
 
     @PostMapping(value = "/anonymous/users/documentPicture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<HttpStatus> saveDocumentPicture(
             @RequestParam("documentPicture") MultipartFile documentPicture,
-            @RequestParam("userEmail") String userEmail
-    ) throws IOException {
+            @RequestParam("userEmail") String userEmail) throws IOException {
         return new ResponseEntity<>(service.uploadUserDocumentPicture(documentPicture, userEmail));
     }
 
     @GetMapping("/anonymous/users/documentPicture")
-    public ResponseEntity<?> getDocumentPicture(@RequestParam("userEmail") String userEmail){
+    public ResponseEntity<?> getDocumentPicture(@RequestParam("userEmail") String userEmail) {
         byte[] documentPicture = service.downloadDocumentPicture(userEmail);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -46,17 +53,22 @@ public class MyUserController {
     }
 
     @PutMapping("/admin/users")
-    public ResponseEntity<HttpStatus> activeUser(@RequestParam("userEmail") String userEmail){
+    public ResponseEntity<HttpStatus> activeUser(@RequestParam("userEmail") String userEmail) {
         return new ResponseEntity<>(service.activeUser(userEmail));
     }
 
     @GetMapping("/protected/users/{email}")
-    public ResponseEntity<MyUserResponseDto> getAuthoritiesByUser(@PathVariable String email){
+    public ResponseEntity<MyUserResponseDto> getAuthoritiesByUser(@PathVariable String email) {
         return new ResponseEntity<>(service.getUserByEmail(email), HttpStatus.OK);
     }
 
     @GetMapping("/admin/users/inactive")
-    public ResponseEntity<List<MyUserResponseDto>> getAllInactiveUsers(){
+    public ResponseEntity<List<MyUserResponseDto>> getAllInactiveUsers() {
         return new ResponseEntity<>(service.getAllInactiveUsers(), HttpStatus.OK);
+    }
+
+    @PostMapping("/admin/users/inactive")
+    public ResponseEntity<HttpStatus> inactiveUser(@RequestParam("userEmail") String userEmail) {
+        return new ResponseEntity<>(service.inactiveUser(userEmail));
     }
 }
